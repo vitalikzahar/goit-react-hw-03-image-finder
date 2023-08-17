@@ -1,11 +1,7 @@
-export const Button = () => {
+export const Button = ({ moreCards }) => {
   return (
     <div>
-      <button
-      //   onClick={this.handleLoadMore}
-      >
-        Load more
-      </button>
+      <button onClick={moreCards}>Load more</button>
     </div>
   );
 };

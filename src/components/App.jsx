@@ -72,6 +72,7 @@ export class App extends Component {
   }
 
   handleLoadMore = () => {
+    console.log(111);
     this.setState(prevState => ({ page: prevState.page + 1 }));
   };
 
@@ -81,7 +82,7 @@ export class App extends Component {
         <Searchbar submit={this.onSubmit}></Searchbar>
         <ImageGallery cards={this.state.images}></ImageGallery>
         <Loader></Loader>
-        <Button></Button>
+        <Button moreCards={this.handleLoadMore}></Button>
       </div>
     );
   }
