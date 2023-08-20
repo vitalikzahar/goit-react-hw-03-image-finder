@@ -2,6 +2,7 @@ import { Button } from './Button/Button';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Loader } from './Loader/Loader';
 import { Searchbar } from './Searchbar/Searchbar';
+import { AppGallary } from './App.styled';
 import axios from 'axios';
 
 axios.defaults.baseURL = 'https://pixabay.com/api';
@@ -13,10 +14,12 @@ export class App extends Component {
     query: '',
     images: [],
     page: 1,
+    loading: false,
   };
 
   fetchItems = async () => {
     try {
+      this.setState({ loading: true });
       const response = await axios.get(
         `/?q=${this.state.query.slice(
           this.state.query.indexOf('/') + 1
@@ -24,20 +27,11 @@ export class App extends Component {
           this.state.page
         }&key=${key}&image_type=photo&orientation=horizontal&per_page=12`
       );
+      this.setState({ loading: false });
       return response.data;
     } catch (error) {
       console.error(error);
     }
-  };
-
-  deleteQuiz = async quizId => {
-    const response = await axios.delete(`/quizzes/${quizId}`);
-    return response.data;
-  };
-
-  createQuiz = async quiz => {
-    const response = await axios.post('/quizzes', quiz);
-    return response.data;
   };
 
   onSubmit = evt => {
@@ -61,29 +55,23 @@ export class App extends Component {
       this.fetchItems().then(responce => {
         this.setState({ images: responce.hits });
       });
-      console.log(
-        `HTTP запрос за ${this.state.query.slice(
-          this.state.query.indexOf('/') + 1
-        )}, и page=${this.state.page}`
-      );
-      // Не забываем отрезать req-id/ от query
-      // this.setState({ images: результат запроса })
     }
   }
 
   handleLoadMore = () => {
-    console.log(111);
     this.setState(prevState => ({ page: prevState.page + 1 }));
   };
 
   render() {
     return (
-      <div>
+      <AppGallary>
         <Searchbar submit={this.onSubmit}></Searchbar>
         <ImageGallery cards={this.state.images}></ImageGallery>
-        <Loader></Loader>
-        <Button moreCards={this.handleLoadMore}></Button>
-      </div>
+        <Loader visible={this.state.loading}></Loader>
+        {this.state.images.length !== 0 && (
+          <Button moreCards={this.handleLoadMore}></Button>
+        )}
+      </AppGallary>
     );
   }
 }
