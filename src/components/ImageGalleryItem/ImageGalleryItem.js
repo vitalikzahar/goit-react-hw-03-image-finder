@@ -5,19 +5,21 @@ import { Modals } from 'components/Modals/Modals';
 
 export class ImageGalleryItem extends Component {
   state = { isModalOpen: false };
-  openModal = () => this.setState({ isModalOpen: true });
-  closeModal = () => this.setState({ isModalOpen: false });
 
+  togleModal = () =>
+    this.setState(prevState => ({
+      isModalOpen: !prevState.isModalOpen,
+    }));
   render() {
     const { webImg, largeImg } = this.props;
 
     return (
       <Items>
-        <Img onClick={this.openModal} src={webImg} alt="smalImg" />
+        <Img onClick={this.togleModal} src={webImg} alt="smalImg" />
         <Modals
           isOpen={this.state.isModalOpen}
-          openModal={this.openModal}
-          closeModal={this.closeModal}
+          openModal={this.togleModal}
+          closeModal={this.togleModal}
           largeImg={largeImg}
         ></Modals>
       </Items>

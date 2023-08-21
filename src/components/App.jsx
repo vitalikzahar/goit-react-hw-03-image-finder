@@ -3,10 +3,7 @@ import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Loader } from './Loader/Loader';
 import { Searchbar } from './Searchbar/Searchbar';
 import { AppGallary } from './App.styled';
-import axios from 'axios';
-
-axios.defaults.baseURL = 'https://pixabay.com/api';
-const key = '38201775-25af2f6387845f79e6ba89182';
+import { getResponse } from './fetch';
 const { Component } = require('react');
 
 export class App extends Component {
@@ -17,20 +14,13 @@ export class App extends Component {
     loading: false,
     showBtn: '',
   };
-  getResponse = async () => {
-    const response = await axios.get(
-      `/?q=${this.state.query.slice(this.state.query.indexOf('/') + 1)}&page=${
-        this.state.page
-      }&key=${key}&image_type=photo&orientation=horizontal&per_page=12`
-    );
-
-    return response.data;
-  };
 
   fetchItems = async () => {
     try {
       this.setState({ loading: true });
-      return this.getResponse();
+      const queryItems = this.state.query;
+      const page = this.state.page;
+      return getResponse(queryItems, page);
     } catch (error) {
       console.error(error);
     } finally {
