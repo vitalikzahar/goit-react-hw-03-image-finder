@@ -6,12 +6,17 @@ import {
   SearchInput,
 } from './Searchbar.styled';
 
-export const Searchbar = ({ submit }) => {
+export const Searchbar = ({ changeQuery }) => {
+  const onSubmit = evt => {
+    evt.preventDefault();
+    changeQuery(evt.target.elements.query.value);
+    evt.target.reset();
+  };
   return (
     <Search>
       <SearchForm
         onSubmit={evt => {
-          submit(evt);
+          onSubmit(evt);
         }}
       >
         <SearchFormButton type="submit">

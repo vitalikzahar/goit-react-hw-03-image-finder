@@ -15,30 +15,29 @@ export class App extends Component {
     images: [],
     page: 1,
     loading: false,
+    showBtn: '',
+  };
+  getResponse = async () => {
+    const response = await axios.get(
+      `/?q=${this.state.query.slice(this.state.query.indexOf('/') + 1)}&page=${
+        this.state.page
+      }&key=${key}&image_type=photo&orientation=horizontal&per_page=12`
+    );
+
+    return response.data;
   };
 
   fetchItems = async () => {
     try {
       this.setState({ loading: true });
-      const response = await axios.get(
-        `/?q=${this.state.query.slice(
-          this.state.query.indexOf('/') + 1
-        )}&page=${
-          this.state.page
-        }&key=${key}&image_type=photo&orientation=horizontal&per_page=12`
-      );
-      this.setState({ loading: false });
-      return response.data;
+      return this.getResponse();
     } catch (error) {
       console.error(error);
+    } finally {
+      this.setState({ loading: false });
     }
   };
 
-  onSubmit = evt => {
-    evt.preventDefault();
-    this.changeQuery(evt.target.elements.query.value);
-    evt.target.reset();
-  };
   changeQuery = newQuery => {
     this.setState({
       query: `${Date.now()}/${newQuery}`,
@@ -53,7 +52,10 @@ export class App extends Component {
       prevState.page !== this.state.page
     ) {
       this.fetchItems().then(responce => {
-        this.setState({ images: responce.hits });
+        this.setState(prevState => ({
+          images: [...prevState.images, ...responce.hits],
+          showBtn: responce.totalHits,
+        }));
       });
     }
   }
@@ -65,10 +67,10 @@ export class App extends Component {
   render() {
     return (
       <AppGallary>
-        <Searchbar submit={this.onSubmit}></Searchbar>
+        <Searchbar changeQuery={this.changeQuery}></Searchbar>
         <ImageGallery cards={this.state.images}></ImageGallery>
         <Loader visible={this.state.loading}></Loader>
-        {this.state.images.length !== 0 && (
+        {this.state.page < Math.ceil(this.state.showBtn / 12) && (
           <Button moreCards={this.handleLoadMore}></Button>
         )}
       </AppGallary>
